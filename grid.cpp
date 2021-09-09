@@ -20,7 +20,11 @@ vector<vector<Cell>> generateGrid(const int RESOLUTION[2], const int SIDE_LENGTH
 
 bool validCell(const vector<vector<Cell>>&grid, const int row, const int col)
 {
-    if(row >= grid.size() || col >= grid[0].size() || grid[row][col].visited) return false;
+    if(row >= grid.size() 
+    || col >= grid[0].size() 
+    || row < 0 
+    || col < 0
+    || grid[row][col].visited) return false;
 
     return true;
 }
@@ -35,6 +39,19 @@ vector<int> aviliableSpaces(const vector<vector<Cell>>&grid, const int row, cons
     if(validCell(grid, row, col + 1)) freeSpaces.push_back(Directions::RIGHT);
 
     return freeSpaces;
+}
+
+bool completedMaze(const vector<vector<Cell>>&grid)
+{
+    for(int i = 0; i < grid.size(); i++)
+    {
+        for(int j = 0; j < grid[i].size(); j++)
+        {
+            if(!grid[i][j].visited) return false;
+        }
+    }
+
+    return true;
 }
 
 int randomIndex(const int size)

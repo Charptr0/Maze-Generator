@@ -43,7 +43,48 @@ void draw(sf::RenderWindow &screen, vector<vector<Cell>>&grid)
             else if(grid[i][j].visited) r.setFillColor(sf::Color::White); //traversed squares
             else r.setFillColor(sf::Color::Black);
 
+            sf::RectangleShape right_wall;
+            sf::RectangleShape left_wall;
+            sf::RectangleShape up_wall;
+            sf::RectangleShape down_wall;
+
+            right_wall.setFillColor(sf::Color::White);
+            right_wall.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
+
+            left_wall.setFillColor(sf::Color::White);
+            left_wall.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
+
+            up_wall.setFillColor(sf::Color::White);
+            up_wall.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
+
+            down_wall.setFillColor(sf::Color::White);
+            down_wall.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
+
+            if(grid[i][j].rightConnected)
+            {
+                right_wall.setPosition(sf::Vector2f(posX + WALL_LENGTH,posY));
+            }
+
+            if(grid[i][j].leftConnected)
+            {
+                left_wall.setPosition(sf::Vector2f(posX - WALL_LENGTH,posY));
+            }
+
+            if(grid[i][j].upConnected)
+            {
+                up_wall.setPosition(sf::Vector2f(posX,posY + WALL_LENGTH));
+            }
+
+            if(grid[i][j].downConnected)
+            {
+                down_wall.setPosition(sf::Vector2f(posX ,posY - WALL_LENGTH));
+            }
+
             screen.draw(r); //draw the square to screen
+            screen.draw(right_wall);
+            screen.draw(left_wall);
+            screen.draw(up_wall);
+            screen.draw(down_wall);
 
             posX += WALL_LENGTH + SIDE_LENGTH; //increase the posX
         }
@@ -97,7 +138,7 @@ void dfs(sf::RenderWindow &screen, vector<vector<Cell>>&grid, int row = 0, int c
                 break;
         }
 
-        freeSpaces.erase(freeSpaces.begin() + index);
+        freeSpaces = aviliableSpaces(grid, row, col);
     }
 }
 
@@ -105,19 +146,22 @@ int main()
 {
     sf::RenderWindow screen;
 
-    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x], CURRENT_RESOLUTION[Axis::y]), TITLE);
-    screen.setFramerateLimit(MAX_FRAMERATE);
+    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x] + (SIDE_LENGTH + WALL_LENGTH), CURRENT_RESOLUTION[Axis::y] + (SIDE_LENGTH + WALL_LENGTH)), TITLE);
+    screen.setFramerateLimit(MAX_FRAMERATE + 30);
 
     //create grid for the maze
     vector<vector<Cell>> grid = generateGrid(CURRENT_RESOLUTION, SIDE_LENGTH, WALL_LENGTH);
 
     while(screen.isOpen())
     {
-        screen.clear();
-
         grabEvent(screen);
 
+        if(completedMaze(grid)) continue;
+
+        screen.clear();
+
         dfs(screen, grid);
+        draw(screen, grid);
 
         screen.display(); //update the screen
     }
