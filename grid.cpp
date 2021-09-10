@@ -42,19 +42,6 @@ vector<int> aviliableSpaces(const vector<vector<Cell>>&grid, const int row, cons
     return freeSpaces;
 }
 
-bool completedMaze(const vector<vector<Cell>>&grid)
-{
-    for(int i = 0; i < grid.size(); i++)
-    {
-        for(int j = 0; j < grid[i].size(); j++)
-        {
-            if(!grid[i][j].visited) return false;
-        }
-    }
-
-    return true;
-}
-
 void resetGrid(vector<vector<Cell>>&grid)
 {
     for(int i = 0; i < grid.size(); i++)

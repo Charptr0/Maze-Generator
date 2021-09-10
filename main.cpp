@@ -2,7 +2,7 @@
 #include "grid.cpp"
 #include <SFML/Graphics.hpp>
 
-const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_MEDIUM[Axis::x], RESOLUTIONS_MEDIUM[Axis::y]}; //set resolution
+const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_SMALL[Axis::x], RESOLUTIONS_SMALL[Axis::y]}; //set resolution
 const int SIDE_LENGTH = SIDE_LENGTH_LARGE; //set side of square
 const int WALL_LENGTH = WALL_LENGTH_LARGE; //set the side of the wall
 
@@ -25,7 +25,11 @@ void grabEvent(sf::RenderWindow &screen, vector<vector<Cell>>&grid)
         {
             if(mazeCompleted) 
             {
-                resetGrid(grid);
+                grid.clear();
+                grid.shrink_to_fit();
+
+                grid = generateGrid(CURRENT_RESOLUTION, SIDE_LENGTH, WALL_LENGTH);
+
                 mazeCompleted = false;
             }
         }
@@ -153,7 +157,7 @@ int main()
                     TITLE, 
                     sf::Style::Close);
 
-    screen.setFramerateLimit(100); //cap the framerate of the program (preferred: 60-100fps)
+    screen.setFramerateLimit(MAX_FRAMERATE); //cap the framerate of the program (preferred: 60-100fps)
 
     //create grid for the maze
     vector<vector<Cell>> grid = generateGrid(CURRENT_RESOLUTION, SIDE_LENGTH, WALL_LENGTH);
@@ -162,16 +166,15 @@ int main()
     {
         grabEvent(screen, grid);
 
-        if(completedMaze(grid))
+        if(!mazeCompleted)
         {
+            screen.clear();
+
+            dfs(screen, grid);
+            draw(screen, grid);
+
             mazeCompleted = true;
-            continue;
         }
-
-        screen.clear();
-
-        dfs(screen, grid);
-        draw(screen, grid);
 
         screen.display(); //update the screen
     }

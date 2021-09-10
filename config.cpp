@@ -1,3 +1,5 @@
+#include "./Text/text.cpp"
+
 enum Axis
 {
     x, y
@@ -27,6 +29,9 @@ const int WALL_LENGTH_MEDIUM= 10;
 const int SIDE_LENGTH_LARGE = 80;
 const int WALL_LENGTH_LARGE = 20;
 
-
 const int MAX_FRAMERATE = 80;
 const char TITLE[] = "Maze Generator";
+
+const Text RESTART_INSRUCTION_TXT("Press any key to restart");
+const Text ELAPSED_TIME_TXT("Elapsed Time: ");
+const Text CURRENT_CELL_TXT("Current Cell: ");
