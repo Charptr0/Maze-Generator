@@ -1,22 +1,33 @@
-#include <vector>
 #include "config.cpp"
 #include "grid.cpp"
 #include <SFML/Graphics.hpp>
 
-const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_V2[Axis::x], RESOLUTIONS_V2[Axis::y]}; //set resolution
-const int SIDE_LENGTH = SIDE_LENGTH_V2; //set side of square
-const int WALL_LENGTH = WALL_LENGTH_V2; //set the side of the wall
+const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_MEDIUM[Axis::x], RESOLUTIONS_MEDIUM[Axis::y]}; //set resolution
+const int SIDE_LENGTH = SIDE_LENGTH_LARGE; //set side of square
+const int WALL_LENGTH = WALL_LENGTH_LARGE; //set the side of the wall
+
+bool mazeCompleted = false;
 
 //event grabber SFML boiler code
-void grabEvent(sf::RenderWindow &screen)
+void grabEvent(sf::RenderWindow &screen, vector<vector<Cell>>&grid)
 {
     sf::Event event;
     while(screen.pollEvent(event))
     {
+        //close the program
         if(event.type == sf::Event::Closed) 
         {
             screen.close();
             exit(0);
+        }
+
+        if(event.type == sf::Event::KeyReleased)
+        {
+            if(mazeCompleted) 
+            {
+                resetGrid(grid);
+                mazeCompleted = false;
+            }
         }
     }
 }
@@ -26,23 +37,26 @@ void draw(sf::RenderWindow &screen, vector<vector<Cell>>&grid)
 {
     int posX = 0;
     int posY = 0;
-
+    
+    //traverse thru the grid
     for(int i = 0; i < grid.size(); i++)
     {
-        grabEvent(screen);
+        grabEvent(screen, grid);
 
-        posX = 0;
+        posX = 0; //reset the x position to the far left
 
         for(int j = 0; j < grid[i].size(); j++)
         {
-            sf::RectangleShape r;
-            r.setPosition(sf::Vector2f(posX,posY));
-            r.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
+            //set the cell postion and the size
+            sf::RectangleShape square;
+            square.setPosition(sf::Vector2f(posX,posY));
+            square.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
 
-            if(grid[i][j].cursor) r.setFillColor(sf::Color::Green); //current square that the program is on
-            else if(grid[i][j].visited) r.setFillColor(sf::Color::White); //traversed squares
-            else r.setFillColor(sf::Color::Black);
+            if(grid[i][j].cursor) square.setFillColor(sf::Color::Green); //current square that the program is on
+            else if(grid[i][j].visited) square.setFillColor(sf::Color::White); //visited squares
+            else square.setFillColor(sf::Color::Red); //untouched squares
 
+            //walls
             sf::RectangleShape right_wall;
             sf::RectangleShape left_wall;
             sf::RectangleShape up_wall;
@@ -60,47 +74,34 @@ void draw(sf::RenderWindow &screen, vector<vector<Cell>>&grid)
             down_wall.setFillColor(sf::Color::White);
             down_wall.setSize(sf::Vector2f(SIDE_LENGTH,SIDE_LENGTH));
 
-            if(grid[i][j].rightConnected)
-            {
-                right_wall.setPosition(sf::Vector2f(posX + WALL_LENGTH,posY));
-            }
+            //set the position of those walls based on the connections of the squares
+            if(grid[i][j].rightConnected) right_wall.setPosition(sf::Vector2f(posX + WALL_LENGTH,posY));
+            if(grid[i][j].leftConnected) left_wall.setPosition(sf::Vector2f(posX - WALL_LENGTH,posY));
+            if(grid[i][j].upConnected) up_wall.setPosition(sf::Vector2f(posX,posY + WALL_LENGTH));
+            if(grid[i][j].downConnected) down_wall.setPosition(sf::Vector2f(posX ,posY - WALL_LENGTH));
 
-            if(grid[i][j].leftConnected)
-            {
-                left_wall.setPosition(sf::Vector2f(posX - WALL_LENGTH,posY));
-            }
-
-            if(grid[i][j].upConnected)
-            {
-                up_wall.setPosition(sf::Vector2f(posX,posY + WALL_LENGTH));
-            }
-
-            if(grid[i][j].downConnected)
-            {
-                down_wall.setPosition(sf::Vector2f(posX ,posY - WALL_LENGTH));
-            }
-
-            screen.draw(r); //draw the square to screen
-            screen.draw(right_wall);
-            screen.draw(left_wall);
-            screen.draw(up_wall);
-            screen.draw(down_wall);
+            screen.draw(square); //draw the square to screen
+            screen.draw(right_wall); //draw right wall if exist
+            screen.draw(left_wall); //draw left wall if exist
+            screen.draw(up_wall); //draw up wall if exist
+            screen.draw(down_wall); //draw down wall if exist
 
             posX += WALL_LENGTH + SIDE_LENGTH; //increase the posX
         }
 
-        screen.display();
-        posY += WALL_LENGTH + SIDE_LENGTH;
+        screen.display(); //update the screen
+
+        posY += WALL_LENGTH + SIDE_LENGTH; //increase the y position
     }
 }
 
 void dfs(sf::RenderWindow &screen, vector<vector<Cell>>&grid, int row = 0, int col = 0)
 {
-    if(row >= grid.size() || col >= grid[0].size()) return;
+    if(row >= grid.size() || col >= grid[0].size()) return; //base case
 
-    grabEvent(screen);
+    grabEvent(screen, grid);
 
-    grid[row][col].visited = true; //currently visiting the node
+    grid[row][col].visited = true; //mark the cell as visited
 
     vector<int>freeSpaces = aviliableSpaces(grid, row, col); //add all directions that has not been traversed
 
@@ -146,17 +147,26 @@ int main()
 {
     sf::RenderWindow screen;
 
-    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x] + (SIDE_LENGTH + WALL_LENGTH), CURRENT_RESOLUTION[Axis::y] + (SIDE_LENGTH + WALL_LENGTH)), TITLE);
-    screen.setFramerateLimit(MAX_FRAMERATE + 30);
+    //create the screen, with resolution, title, and the ability to resize is disabled
+    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x] + (SIDE_LENGTH + WALL_LENGTH), 
+                    CURRENT_RESOLUTION[Axis::y] + (SIDE_LENGTH + WALL_LENGTH)), 
+                    TITLE, 
+                    sf::Style::Close);
+
+    screen.setFramerateLimit(100); //cap the framerate of the program (preferred: 60-100fps)
 
     //create grid for the maze
     vector<vector<Cell>> grid = generateGrid(CURRENT_RESOLUTION, SIDE_LENGTH, WALL_LENGTH);
 
     while(screen.isOpen())
     {
-        grabEvent(screen);
+        grabEvent(screen, grid);
 
-        if(completedMaze(grid)) continue;
+        if(completedMaze(grid))
+        {
+            mazeCompleted = true;
+            continue;
+        }
 
         screen.clear();
 

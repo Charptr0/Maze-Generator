@@ -24,4 +24,14 @@ class Cell
             this->leftConnected = false;
             this->rightConnected = false;
         }
+
+        void reset()
+        {
+            this->visited = false;
+            this->cursor = false;
+            this->upConnected = false;
+            this->downConnected = false;
+            this->leftConnected = false;
+            this->rightConnected = false;
+        }
 };

@@ -5,12 +5,13 @@
 
 using std::vector;
 
+//generate the apprioate amount of cells that corresponds to the resolution
 vector<vector<Cell>> generateGrid(const int RESOLUTION[2], const int SIDE_LENGTH, const int WALL_LENGTH)
 {
     const int TOTAL_COLS = RESOLUTION[0] / (SIDE_LENGTH + WALL_LENGTH);
     const int TOTAL_ROWS = RESOLUTION[1] / (SIDE_LENGTH + WALL_LENGTH);
 
-    std::srand(time(NULL));
+    std::srand(time(NULL)); //start the random timer
 
     vector<Cell>cols(TOTAL_COLS + 1, Cell());
     vector<vector<Cell>>grid(TOTAL_ROWS + 1, cols);
@@ -54,6 +55,18 @@ bool completedMaze(const vector<vector<Cell>>&grid)
     return true;
 }
 
+void resetGrid(vector<vector<Cell>>&grid)
+{
+    for(int i = 0; i < grid.size(); i++)
+    {
+        for(int j = 0; j < grid[i].size(); j++)
+        {
+            grid[i][j].reset();
+        }
+    }
+}
+
+//generate a random number that is < grid.size()
 int randomIndex(const int size)
 {
     return rand() % size;
