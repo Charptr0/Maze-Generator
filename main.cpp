@@ -2,7 +2,7 @@
 #include "grid.cpp"
 #include <SFML/Graphics.hpp>
 
-const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_SMALL[Axis::x], RESOLUTIONS_SMALL[Axis::y]}; //set resolution
+const int CURRENT_RESOLUTION[2] = {RESOLUTIONS_MEDIUM[Axis::x], RESOLUTIONS_MEDIUM[Axis::y]}; //set resolution
 const int SIDE_LENGTH = SIDE_LENGTH_LARGE; //set side of square
 const int WALL_LENGTH = WALL_LENGTH_LARGE; //set the side of the wall
 
@@ -147,17 +147,44 @@ void dfs(sf::RenderWindow &screen, vector<vector<Cell>>&grid, int row = 0, int c
     }
 }
 
+//depending on the x value of the resolution, make sure the txt is centered
+void alignText()
+{
+    const int X_VALUE = CURRENT_RESOLUTION[Axis::x];
+
+    switch(X_VALUE)
+    {
+        case 600:
+            restartTxt->setPosition(CURRENT_RESOLUTION[Axis::x] * 0.2, CURRENT_RESOLUTION[Axis::y] * 0.4);
+            break;
+
+        case 800:
+            restartTxt->setPosition(CURRENT_RESOLUTION[Axis::x] * 0.3, CURRENT_RESOLUTION[Axis::y] * 0.4);
+            break;
+
+        case 1000:
+            restartTxt->setPosition(CURRENT_RESOLUTION[Axis::x] * 0.33, CURRENT_RESOLUTION[Axis::y] * 0.4);
+            break;
+
+        default: //unknown resolution, set it to the top left
+            restartTxt->setPosition(0, 0);
+            break;
+    }
+}
+
 int main()
 {
     sf::RenderWindow screen;
 
     //create the screen, with resolution, title, and the ability to resize is disabled
-    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x] + (SIDE_LENGTH + WALL_LENGTH), 
-                    CURRENT_RESOLUTION[Axis::y] + (SIDE_LENGTH + WALL_LENGTH)), 
+    screen.create(sf::VideoMode(CURRENT_RESOLUTION[Axis::x], 
+                    CURRENT_RESOLUTION[Axis::y]), 
                     TITLE, 
                     sf::Style::Close);
 
     screen.setFramerateLimit(MAX_FRAMERATE); //cap the framerate of the program (preferred: 60-100fps)
+
+    alignText();
 
     //create grid for the maze
     vector<vector<Cell>> grid = generateGrid(CURRENT_RESOLUTION, SIDE_LENGTH, WALL_LENGTH);
@@ -175,6 +202,8 @@ int main()
 
             mazeCompleted = true;
         }
+
+        screen.draw(restartTxt->getText());
 
         screen.display(); //update the screen
     }

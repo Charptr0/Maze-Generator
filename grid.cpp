@@ -13,8 +13,8 @@ vector<vector<Cell>> generateGrid(const int RESOLUTION[2], const int SIDE_LENGTH
 
     std::srand(time(NULL)); //start the random timer
 
-    vector<Cell>cols(TOTAL_COLS + 1, Cell());
-    vector<vector<Cell>>grid(TOTAL_ROWS + 1, cols);
+    vector<Cell>cols(TOTAL_COLS, Cell());
+    vector<vector<Cell>>grid(TOTAL_ROWS, cols);
 
     return grid;
 }

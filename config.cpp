@@ -32,6 +32,4 @@ const int WALL_LENGTH_LARGE = 20;
 const int MAX_FRAMERATE = 80;
 const char TITLE[] = "Maze Generator";
 
-const Text RESTART_INSRUCTION_TXT("Press any key to restart");
-const Text ELAPSED_TIME_TXT("Elapsed Time: ");
-const Text CURRENT_CELL_TXT("Current Cell: ");
+Text* restartTxt = new Text("Press any key to restart");
