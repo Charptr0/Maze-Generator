@@ -1,6 +1,10 @@
-# Maze-Generator <img src="https://i.imgur.com/0ZhDDz4.gif" width="15%" align="right">
+# Maze-Generator <img src="https://i.imgur.com/0ZhDDz4.gif" width="10%" align="right">
 
 Generate a randomize maze using Depth-First search.
+
+
+## Demonstration Video
+[![MAZE](https://img.youtube.com/vi/IZkIYlHzFvg/0.jpg)](https://www.youtube.com/watch?v=IZkIYlHzFvg)
 
 
 ## Installation
@@ -22,9 +26,6 @@ g++ main.o -o maze-gen -lsfml-graphics -lsfml-window -lsfml-system
 ```
 ./maze-gen
 ```
-
-## Demonstration Video
-Coming soon
 
 
 ## Tips and Instructions
