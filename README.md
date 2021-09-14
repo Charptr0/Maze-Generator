@@ -1,6 +1,6 @@
 # Maze-Generator <img src="https://i.imgur.com/0ZhDDz4.gif" width="10%" align="right">
 
-Generate a randomize maze using Depth-First search.
+Generate a randomized maze using depth-first search.
 
 
 ## Demonstration Video
